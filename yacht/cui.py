@@ -3,6 +3,8 @@ import random
 
 
 class ScoreBoard:
+    '''ScoreBoard class
+    '''
 
     def __init__(self, hands):
         self.board: Dict[str, int] = {}

@@ -2,6 +2,7 @@ from typing import Any, Dict, Sequence
 import random
 from porker_hand import Aces, Deuces, Threes, Fours, Fives, Sixes, \
     Choice, FourOfAKind, FullHouse, ShortStraight, LongStraight, Yacht
+import os
 
 
 class ScoreBoard:
@@ -39,6 +40,7 @@ def roll_dices():
 
 
 if __name__ == '__main__':
+    os.system('cls')
     HANDS = [Aces(), Deuces(), Threes(), Fours(), Fives(), Sixes(),
              Choice(), FourOfAKind(), FullHouse(), ShortStraight(),
              LongStraight(), Yacht()]
@@ -67,3 +69,4 @@ if __name__ == '__main__':
             except:
                 continue
         board.set_score(hand_to_set[0], hand_to_set[1])
+        os.system('cls')

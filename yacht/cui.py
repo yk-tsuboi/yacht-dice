@@ -36,7 +36,7 @@ class ScoreBoard:
 
 
 def roll_dices():
-    return [random.randint(1, 5) for _ in range(5)]
+    return [random.randint(1, 6) for _ in range(5)]
 
 
 if __name__ == '__main__':
@@ -66,7 +66,7 @@ if __name__ == '__main__':
                 idx = int(input())
                 hand_to_set = possible_hands[idx]
                 break
-            except:
+            except (ValueError, IndexError):
                 continue
         board.set_score(hand_to_set[0], hand_to_set[1])
         os.system('cls')

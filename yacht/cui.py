@@ -19,16 +19,18 @@ class ScoreBoard:
             raise ValueError
         self.board[hand] = score
 
+    def total_score(self):
+        return sum(self.board.values())
+
     def __str__(self) -> str:
-        view_string = '役        点数\n'
+        view_string = '{:<16}{:>4}\n'.format('HAND', 'SCORE')
         for hand in self.hands:
             if hand in self.board:
-                score_to_show = self.board[hand]
+                score_to_show = str(self.board[hand])
             else:
-                score_to_show = 0
-            view_string += f"{hand.name:_<10}{score_to_show:_>4}\n"
-        total_score = sum(self.board.values())
-        view_string += f"合計        {total_score:_>4}\n"
+                score_to_show = '_'
+            view_string += f"{hand.name:<16}{score_to_show:>4}\n"
+        view_string += "{:<16}{:>4}\n".format('TOTAL', self.total_score())
         return view_string
 
 
@@ -43,18 +45,19 @@ if __name__ == '__main__':
     board = ScoreBoard(HANDS)
     while True:
         print(board)
+        unfilled_hands = [hand for hand in HANDS if hand not in board.board]
+        if len(unfilled_hands) == 0:
+            print(f'Your total score is {board.total_score()}')
+            exit()
         print('Roll Dices[Enter]', end='>')
         input()
         dices = roll_dices()
         print(f'Dices:{dices}')
         print(f'Possible Hands:')
-        for hand in HANDS:
-            print(hand, end='')
-            print(hand.score(dices))
         possible_hands = [(hand, hand.score(dices))
-                          for hand in HANDS if hand.score(dices) > 0]
+                          for hand in unfilled_hands]
         for i, hand in enumerate(possible_hands):
-            print(f'    [{i}]  {hand[0].name:_<10}{hand[1]:_>4}')
+            print(f'  [{i}]  {hand[0].name:<16}{hand[1]:>4}')
         while True:
             print('Choose one hand[input number]', end='>')
             try:

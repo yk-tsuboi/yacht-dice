@@ -1,7 +1,9 @@
+from abc import ABC, abstractmethod
+
 import numpy as np
 
 
-class _PorkerHand:
+class PorkerHand(ABC):
     @staticmethod
     def _check(dices):
         if len(dices) != 5:
@@ -10,11 +12,12 @@ class _PorkerHand:
         if not all([isinstance(i, int) for i in dices]):
             raise TypeError('component of list must be integer')
 
+    @abstractmethod
     def score(self, dices):
         return
 
 
-class _NumberHand(_PorkerHand):
+class _NumberHand(PorkerHand):
     def _score(self, dices, dice_number):
         self._check(dices)
         dices = np.array(dices)
@@ -22,7 +25,7 @@ class _NumberHand(_PorkerHand):
         return match_dice * dice_number
 
 
-class _DuplicateHand(_PorkerHand):
+class _DuplicateHand(PorkerHand):
     def _score(self, dices, lower_limit):
         self._check(dices)
         dices = np.array(dices)
@@ -34,10 +37,11 @@ class _DuplicateHand(_PorkerHand):
             return 0
 
 
-class _StraightHand(_PorkerHand):
+class _StraightHand(PorkerHand):
     def _preprocess(self, dices):
         self._check(dices)
-        dices = np.array(dices).sort()
+        dices = np.unique(dices)
+        dices.sort()
         return dices
 
 
@@ -89,7 +93,7 @@ class Sixes(_NumberHand):
         return self._score(dices, 6)
 
 
-class Choice(_PorkerHand):
+class Choice(PorkerHand):
     def __init__(self):
         self.name = 'Choice'
 
@@ -106,7 +110,7 @@ class FourOfAKind(_DuplicateHand):
         return self._score(dices, 4)
 
 
-class FullHouse(_PorkerHand):
+class FullHouse(PorkerHand):
     def __init__(self):
         self.name = 'Full House'
 
@@ -132,10 +136,12 @@ class ShortStraight(_StraightHand):
         self.name = 'S. Straight'
 
     def score(self, dices):
-        dices = self._preprocess(dices)
-        if dices[:4] == np.array([1, 2, 3, 4]) or \
-                dices[:4] == np.array([2, 3, 4, 5]) or \
-                dices[1:] == np.array([3, 4, 5, 6]):
+        unique = self._preprocess(dices)
+        if len(unique) <= 3:
+            return 0
+        if all(unique[:4] == np.array([1, 2, 3, 4])) or \
+                all(unique[:4] == np.array([2, 3, 4, 5])) or \
+                all(unique[1:] == np.array([3, 4, 5, 6])):
             return ShortStraight.SCORE_OF_HAND
         else:
             return 0
@@ -148,9 +154,11 @@ class LongStraight(_StraightHand):
         self.name = 'L. Straight'
 
     def score(self, dices):
-        dices = self._preprocess(dices)
-        if dices == np.array([1, 2, 3, 4, 5]) or \
-                dices == np.array([2, 3, 4, 5, 6]):
+        unique = self._preprocess(dices)
+        if len(unique) <= 4:
+            return 0
+        if all(unique == np.array([1, 2, 3, 4, 5])) or \
+                all(unique == np.array([2, 3, 4, 5, 6])):
             return LongStraight.SCORE_OF_HAND
         else:
             return 0

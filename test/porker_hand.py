@@ -77,6 +77,7 @@ class TestPorkerHand(unittest.TestCase):
         self.assertEqual(hand.score([1, 2, 3, 4, 6]), hand.SCORE_OF_HAND)
         self.assertEqual(hand.score([1, 1, 2, 2, 3]), 0)
         self.assertEqual(hand.score([1, 3, 2, 2, 4]), hand.SCORE_OF_HAND)
+        self.assertEqual(hand.score([1, 4, 5, 2, 4]), 0)
 
     def test_l_straight(self):
         hand = LongStraight()

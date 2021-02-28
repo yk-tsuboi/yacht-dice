@@ -38,11 +38,14 @@ class _DuplicateHand(PorkerHand):
 
 
 class _StraightHand(PorkerHand):
-    def _preprocess(self, dices):
+    def _score(self, dices, candidate):
         self._check(dices)
-        dices = np.unique(dices)
-        dices.sort()
-        return dices
+        unique = np.unique(dices)
+        unique.sort()
+        for cand in candidate:
+            if all([c in unique for c in cand]):
+                return self.SCORE_OF_HAND
+        return 0
 
 
 class Aces(_NumberHand):
@@ -131,37 +134,24 @@ class FullHouse(PorkerHand):
 
 class ShortStraight(_StraightHand):
     SCORE_OF_HAND = 15
+    CANDIDATE = ([1, 2, 3, 4], [2, 3, 4, 5], [3, 4, 5, 6])
 
     def __init__(self):
         self.name = 'S. Straight'
 
     def score(self, dices):
-        unique = self._preprocess(dices)
-        if len(unique) <= 3:
-            return 0
-        if all(unique[:4] == np.array([1, 2, 3, 4])) or \
-                all(unique[:4] == np.array([2, 3, 4, 5])) or \
-                all(unique[1:] == np.array([3, 4, 5, 6])):
-            return ShortStraight.SCORE_OF_HAND
-        else:
-            return 0
+        return self._score(dices, self.CANDIDATE)
 
 
 class LongStraight(_StraightHand):
-    SCORE_OF_HAND = 20
+    SCORE_OF_HAND = 30
+    CANDIDATE = ([1, 2, 3, 4, 5], [2, 3, 4, 5, 6])
 
     def __init__(self):
         self.name = 'L. Straight'
 
     def score(self, dices):
-        unique = self._preprocess(dices)
-        if len(unique) <= 4:
-            return 0
-        if all(unique == np.array([1, 2, 3, 4, 5])) or \
-                all(unique == np.array([2, 3, 4, 5, 6])):
-            return LongStraight.SCORE_OF_HAND
-        else:
-            return 0
+        return self._score(dices, self.CANDIDATE)
 
 
 class Yacht(_DuplicateHand):
